@@ -19,19 +19,19 @@ struct span2{int start; int end; char* id; int id_start; int id_end; struct span
 typedef struct {struct span2 first; int n; struct span2 *last;}spandb2;
 
 // general context structure used in notdet intervadb_match
-typedef struct                  // define a context structure 
-{ 
+typedef struct                  // define a context structure
+{
   IntervalDB *iDB;
   IntervalMap *iMap;
   int pos;
 } context;
 
 //  context structure used in notdet intervadb_match with spandb2
-typedef struct                  // define a context structure 
-{ 
+typedef struct                  // define a context structure
+{
   IntervalDB *iDB;
   IntervalMap *iMap;
-  int pos; 
+  int pos;
   char **names;
 } context2;
 
@@ -76,7 +76,7 @@ foreign_t pl_intervaldb_make(term_t num, term_t idb)
   IntervalDB *iDB;
   int n,rval;
 
-  Sprintf("intervaldb_make\n"); 
+  Sprintf("intervaldb_make\n");
 
   PL_get_integer(num,&n);
 
@@ -165,7 +165,7 @@ foreign_t pl_intervaldb_addone(term_t idb, term_t index, term_t s, term_t e)
     PL_fail;
 
   iMap = &iDB->im[n];
- 
+
   iMap->start = x;
   iMap->end = y;
   iMap->sublist = -1;
@@ -208,12 +208,12 @@ foreign_t pl_nclist_build(term_t idb, term_t ncl)
 
   rval = PL_unify_pointer(ncl,iNCL);
 
-  if (rval==FALSE) 
+  if (rval==FALSE)
     {
       free(iDB->im);
       free(iDB);
     }
-  
+
   return rval;
 }
 
@@ -240,11 +240,11 @@ IntervalDB *nclist_intersection(IntervalDB *iDB, int start, int end)
     }
   iMDB->subheader = NULL;
   pMap = iMDB->im;
- 
+
   // first we want to get an iterator
   int_it = interval_iterator_alloc();
   int_it_alloc = int_it;
-  
+
   while(int_it)
     {
     find_intervals(int_it, start, end, iDB->im, iDB->ntop,
@@ -304,11 +304,11 @@ foreign_t pl_nclist_intersection(term_t idb, term_t s, term_t e, term_t mdb)
     }
   iMDB->subheader = NULL;
   pMap = iMDB->im;
- 
+
   // first we want to get an iterator
   int_it = interval_iterator_alloc();
   int_it_alloc = int_it;
-  
+
   while(int_it)
     {
     find_intervals(int_it, start, end, iDB->im, iDB->ntop,
@@ -358,13 +358,13 @@ foreign_t pl_nclist_intersection(term_t idb, term_t s, term_t e, term_t mdb)
         l.append((im_buf[i].start,im_buf[i].end,im_buf[i].target_id,im_buf[i].target_start,im_buf[i].target_end))
     free_interval_iterator(it_alloc)
     return l
-  */    
+  */
 }
 
 // does an intersection and returns a list of span(int, int, int)
 foreign_t pl_nclist_intersection2(term_t idb, term_t s, term_t e, term_t lspan)
 {
-  IntervalDB *iDB; 
+  IntervalDB *iDB;
   IntervalIterator *int_it;
   IntervalIterator *int_it_alloc;
   IntervalMap im_buf[MAX_MATCHES];
@@ -393,7 +393,7 @@ foreign_t pl_nclist_intersection2(term_t idb, term_t s, term_t e, term_t lspan)
   // first we want to get an iterator
   int_it = interval_iterator_alloc();
   int_it_alloc = int_it;
-  
+
   while(int_it)
     {
     find_intervals(int_it, start, end, iDB->im, iDB->ntop,
@@ -446,16 +446,16 @@ IntervalDB *intervaldb_intersection(IntervalDB *iDB, int start, int end)
   iMDB->subheader = NULL;
   pMap = iMDB->im;
   qMap = iDB->im;
- 
+
   for (n=0; n<iDB->n; n++)
     {
       if (
 	  (qMap->end > start && qMap->end < end) ||
-	  (qMap->start < end  && qMap->end >= end ) || 
+	  (qMap->start < end  && qMap->end >= end ) ||
 	  (qMap->start >= start && qMap->end < end) ||
-	  (qMap->start <= start && qMap->end >= end) 
+	  (qMap->start <= start && qMap->end >= end)
 	  )
-	{   
+	{
 	  *pMap++ = *qMap;
 	  n_match++;
 	}
@@ -501,17 +501,17 @@ foreign_t pl_intervaldb_intersection(term_t idb, term_t s, term_t e, term_t mdb)
   iMDB->ntop = IDB;
   pMap = iMDB->im;
   qMap = iDB->im;
- 
+
   for (n=0; n<iDB->n; n++)
     {
       //if (start >= qMap->start && end <= qMap->end)
       if (
 	  (qMap->end > start && qMap->end < end) ||
-	  (qMap->start < end  && qMap->end >= end ) || 
+	  (qMap->start < end  && qMap->end >= end ) ||
 	  (qMap->start >= start && qMap->end < end) ||
-	  (qMap->start <= start && qMap->end >= end) 
+	  (qMap->start <= start && qMap->end >= end)
 	  )
-	{   
+	{
 	  *pMap++ = *qMap;
 	  n_match++;
 	}
@@ -581,8 +581,8 @@ foreign_t pl_intervaldb_intersection2(term_t idb, term_t s, term_t e, term_t mdb
 }
 
 /* LEFT HERE COMMENTED FOR CONVENIENCE
-typedef struct                  // define a context structure 
-{ 
+typedef struct                  // define a context structure
+{
   IntervalDB *iDB;
   IntervalMap *iMap;
   int pos;
@@ -590,14 +590,14 @@ typedef struct                  // define a context structure
 */
 
 // non-deterministic function/predicate
-// given an MDB (an IDB) unifies each succesive interval with start and end 
+// given an MDB (an IDB) unifies each succesive interval with start and end
 foreign_t pl_intervaldb_match(term_t matchdb, term_t start, term_t end, control_t handle)
 {
   context *ctxt = NULL;
   IntervalDB *iMatch;
 
   switch( PL_foreign_control(handle) )
-    { 
+    {
     case PL_FIRST_CALL:
       if ( !PL_get_pointer(matchdb, (void*)&iMatch) )
 	return PL_warning("pl_intervaldb_match/3: instantiation fault");
@@ -610,12 +610,12 @@ foreign_t pl_intervaldb_match(term_t matchdb, term_t start, term_t end, control_
       ctxt->pos = 0;
       if (ctxt->iDB->n <= 0)
 	break;
-      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,*iMap[ctxt->pos].start,matches[ctxt->pos].end);  
+      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,*iMap[ctxt->pos].start,matches[ctxt->pos].end);
       //      if(!PL_unify_integer(start, ctxt->iDB->im[ctxt->pos].start))
       //      	break;
       //if(!PL_unify_integer(end, ctxt->iDB->im[ctxt->pos].end))
       //      break;
-      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);  
+      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);
       if(!PL_unify_integer(start, ctxt->iMap->start))
       	break;
       if(!PL_unify_integer(end, ctxt->iMap->end))
@@ -629,8 +629,8 @@ foreign_t pl_intervaldb_match(term_t matchdb, term_t start, term_t end, control_
       if (ctxt->pos >= ctxt->iDB->n)
 	break;
       //      Sprintf("REDO: %d matches\n",ctxt->iDB->n);
-      //Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,matches[ctxt->pos].start,matches[ctxt->pos].end);  
-      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);  
+      //Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,matches[ctxt->pos].start,matches[ctxt->pos].end);
+      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);
       if(!PL_unify_integer(start, ctxt->iMap->start))
       	break;
       if(!PL_unify_integer(end, ctxt->iMap->end))
@@ -639,7 +639,7 @@ foreign_t pl_intervaldb_match(term_t matchdb, term_t start, term_t end, control_
       ctxt->iMap++;
       PL_retry_address(ctxt);
 
-    case PL_CUTTED: 
+    case PL_CUTTED:
       ctxt = PL_foreign_context_address(handle);
       // clear up the memory we've grabbed
       //      free(ctxt->iDB->im);
@@ -657,7 +657,7 @@ foreign_t pl_intervaldb_match(term_t matchdb, term_t start, term_t end, control_
 
 // non-deterministic function/predicate
 // given an IDB or NCL does an intersection on FIRST_CALL
-// and then unifies each succesive REDO with start and end of the MDB 
+// and then unifies each succesive REDO with start and end of the MDB
 foreign_t pl_intervaldb_match2(term_t idb, term_t rx, term_t ry, term_t start, term_t end, control_t handle)
 {
   context *ctxt = NULL;
@@ -665,7 +665,7 @@ foreign_t pl_intervaldb_match2(term_t idb, term_t rx, term_t ry, term_t start, t
   int x,y;
 
   switch( PL_foreign_control(handle) )
-    { 
+    {
     case PL_FIRST_CALL:
       if ( !PL_get_pointer(idb, (void*)&iDB) )
 	return PL_warning("pl_intervaldb_match/5: instantiation fault");
@@ -703,7 +703,7 @@ foreign_t pl_intervaldb_match2(term_t idb, term_t rx, term_t ry, term_t start, t
       if (ctxt->iDB->n <= 0)
 	break;
       Sprintf("FIRST_CALL: %d matches\n",ctxt->iDB->n);
-      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);  
+      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);
       if(!PL_unify_integer(start, ctxt->iMap->start))
       	break;
       if(!PL_unify_integer(end, ctxt->iMap->end))
@@ -717,8 +717,8 @@ foreign_t pl_intervaldb_match2(term_t idb, term_t rx, term_t ry, term_t start, t
       if (ctxt->pos >= ctxt->iDB->n)
 	break;
       //      Sprintf("REDO: %d matches\n",ctxt->iDB->n);
-      //Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,matches[ctxt->pos].start,matches[ctxt->pos].end);  
-      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);  
+      //Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,matches[ctxt->pos].start,matches[ctxt->pos].end);
+      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);
       if(!PL_unify_integer(start, ctxt->iMap->start))
       	break;
       if(!PL_unify_integer(end, ctxt->iMap->end))
@@ -727,7 +727,7 @@ foreign_t pl_intervaldb_match2(term_t idb, term_t rx, term_t ry, term_t start, t
       ctxt->iMap++;
       PL_retry_address(ctxt);
 
-    case PL_CUTTED: 
+    case PL_CUTTED:
       ctxt = PL_foreign_context_address(handle);
       // clear up the memory we've grabbed
       free(ctxt->iDB->im);
@@ -746,14 +746,14 @@ foreign_t pl_intervaldb_match2(term_t idb, term_t rx, term_t ry, term_t start, t
 }
 
 // non-deterministic function/predicate
-// given an MDB (an IDB) unifies each succesive interval with start, end and id 
+// given an MDB (an IDB) unifies each succesive interval with start, end and id
 foreign_t pl_intervaldb_match3(term_t matchdb, term_t start, term_t end, term_t id, control_t handle)
 {
   context *ctxt = NULL;
   IntervalDB *iMatch;
 
   switch( PL_foreign_control(handle) )
-    { 
+    {
     case PL_FIRST_CALL:
       if ( !PL_get_pointer(matchdb, (void*)&iMatch) )
 	return PL_warning("pl_intervaldb_match/3: instantiation fault");
@@ -790,7 +790,7 @@ foreign_t pl_intervaldb_match3(term_t matchdb, term_t start, term_t end, term_t 
       ctxt->iMap++;
       PL_retry_address(ctxt);
 
-    case PL_CUTTED: 
+    case PL_CUTTED:
       ctxt = PL_foreign_context_address(handle);
       // clear up the memory we've grabbed
       //      free(ctxt->iDB->im);
@@ -807,11 +807,11 @@ foreign_t pl_intervaldb_match3(term_t matchdb, term_t start, term_t end, term_t 
 }
 
 /* LEFT HERE COMMENTED FOR CONVENIENCE
-typedef struct                  // define a context structure 
-{ 
+typedef struct                  // define a context structure
+{
   IntervalDB *iDB;
   IntervalMap *iMap;
-  int pos; 
+  int pos;
   char **names;
 } context2;
 */
@@ -828,7 +828,7 @@ foreign_t pl_intervaldb_match4(term_t matchdb, term_t spandb, term_t start, term
   int x=0;
 
   switch( PL_foreign_control(handle) )
-    { 
+    {
     case PL_FIRST_CALL:
       // get arguments
       if ( !PL_get_pointer(matchdb, (void*)&iMatch) )
@@ -841,7 +841,7 @@ foreign_t pl_intervaldb_match4(term_t matchdb, term_t spandb, term_t start, term
 	PL_fail;
       if (!(ctxt->names = malloc(sizeof(char*)*(iSpandb->n))))
 	PL_fail;
-      
+
       // populate ctxt
       pSpan = &(iSpandb->first);
       cur_name = ctxt->names;
@@ -882,7 +882,7 @@ foreign_t pl_intervaldb_match4(term_t matchdb, term_t spandb, term_t start, term
       if (ctxt->pos >= ctxt->iDB->n)
 	break;
       //      Sprintf("REDO: %d matches\n",ctxt->iDB->n);
-      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);  
+      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);
       if(!PL_unify_integer(start, ctxt->iMap->start))
       	break;
       if(!PL_unify_integer(end, ctxt->iMap->end))
@@ -898,7 +898,7 @@ foreign_t pl_intervaldb_match4(term_t matchdb, term_t spandb, term_t start, term
       //      Sprintf("REDO2: last_id %d\n",ctxt->last_id);
       PL_retry_address(ctxt);
 
-    case PL_CUTTED: 
+    case PL_CUTTED:
       ctxt = PL_foreign_context_address(handle);
       //      Sprintf("CUTTED: %d matches\n",ctxt->iDB->n);
       // clear up the memory we've grabbed
@@ -925,7 +925,7 @@ foreign_t pl_intervaldb_match5(term_t matchdb, term_t ndb, term_t start, term_t 
   char **namedb;
 
   switch( PL_foreign_control(handle) )
-    { 
+    {
     case PL_FIRST_CALL:
       // get arguments
       if ( !PL_get_pointer(matchdb, (void*)&iMatch) )
@@ -936,7 +936,7 @@ foreign_t pl_intervaldb_match5(term_t matchdb, term_t ndb, term_t start, term_t 
       // grab memory
       if (!(ctxt = malloc(sizeof(context2))))
 	PL_fail;
-      
+
       // populate ctxt
       ctxt->names = namedb;
       ctxt->iDB = iMatch;
@@ -969,7 +969,7 @@ foreign_t pl_intervaldb_match5(term_t matchdb, term_t ndb, term_t start, term_t 
       if (ctxt->pos >= ctxt->iDB->n)
 	break;
       //      Sprintf("REDO: %d matches\n",ctxt->iDB->n);
-      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);  
+      //      Sprintf("Match:#%d/%d %d-%d\n",ctxt->pos,ctxt->iDB->n,ctxt->iMap->start,ctxt->iMap->end);
       if(!PL_unify_integer(start, ctxt->iMap->start))
       	break;
       if(!PL_unify_integer(end, ctxt->iMap->end))
@@ -985,7 +985,7 @@ foreign_t pl_intervaldb_match5(term_t matchdb, term_t ndb, term_t start, term_t 
       //      Sprintf("REDO2: last_id %d\n",ctxt->last_id);
       PL_retry_address(ctxt);
 
-    case PL_CUTTED: 
+    case PL_CUTTED:
       ctxt = PL_foreign_context_address(handle);
       //      Sprintf("CUTTED: %d matches\n",ctxt->iDB->n);
       // clear up the memory we've grabbed
@@ -1022,7 +1022,7 @@ foreign_t pl_intervaldb_addall(term_t idb, term_t l)
   while( PL_get_list(list, head, list) )
     n++;
   //  Sprintf("Num recs=%d\n",n);
-  
+
   new_n = iDB->n + n;
 
   // get a new IntervalMap
@@ -1030,15 +1030,15 @@ foreign_t pl_intervaldb_addall(term_t idb, term_t l)
       PL_fail;
 
   // copy existing intervals to new IntervalMap array
-  int x= 0 ,max = iDB->n; 
+  int x= 0 ,max = iDB->n;
   pMap = iMap;
   qMap = iDB->im;
-  //  for (x=0; x<iDB->n; pMap++) // done more efficiently with pointers    
+  //  for (x=0; x<iDB->n; pMap++) // done more efficiently with pointers
     //    iMap[x] = iDB->im[x];
-  for (x=0; x<max; x++) 
+  for (x=0; x<max; x++)
     *pMap++ = *qMap++;
   //  free(iDB->im); // not sure if we need this, so out
-  
+
   head = PL_new_term_ref();      /* variable for the elements */
   list = PL_copy_term_ref(l);    /* copy as we need to write */
 
@@ -1081,7 +1081,7 @@ foreign_t pl_intervaldb_addall(term_t idb, term_t l)
 // free up any memory from an IDB
 foreign_t pl_intervaldb_free(term_t idb)
 {
-  IntervalDB *iDB; 
+  IntervalDB *iDB;
 
   if ( !PL_get_pointer(idb, (void*)&iDB) )
     return PL_warning("pl_intervaldb_free/1: instantiation fault");
@@ -1111,7 +1111,7 @@ foreign_t pl_read_intervals(term_t filename, term_t recs, term_t idb)
   if ( !PL_get_integer(recs, &n) )
     return PL_warning("pl_read_intervals/3: instantiation fault");
 
-  Sprintf("Filename: %s  Records: %d\n", fname, n); 
+  Sprintf("Filename: %s  Records: %d\n", fname, n);
 
   if (!(iDB = malloc(sizeof(IntervalDB))))
       PL_fail;
@@ -1136,7 +1136,7 @@ foreign_t pl_read_intervals(term_t filename, term_t recs, term_t idb)
 
 
 // predicates to manipulate a spandb
-  
+
 /* LEFT HERE COMMENTED FOR CONVENIENCE
 // structs necessary to create a spandb
 struct span{int start; int end; int id; int id_start; int id_end; struct span *next;};
@@ -1149,7 +1149,7 @@ foreign_t pl_spandb_make(term_t sdb)
   spandb *iSDB;
   int rval;
 
-  Sprintf("spandb_make\n"); 
+  Sprintf("spandb_make\n");
 
   if (!(iSDB = malloc(sizeof(spandb))))
     PL_fail;
@@ -1202,16 +1202,16 @@ foreign_t pl_spandb_addone(term_t sdb, term_t s, term_t e, term_t id, term_t id_
 	{
 	  qSpan = pSpan->next;
 	  free(pSpan);
-	  pSpan = qSpan;      
+	  pSpan = qSpan;
 	}
       free(iSDB);
    }
-      
+
   (iSDB->n)++;
 
   iSDB->last = iSDB->last->next;
 
-  //  Sprintf("spandb_addone: added %d %d\n", s_s,s_e); 
+  //  Sprintf("spandb_addone: added %d %d\n", s_s,s_e);
 
   PL_succeed;
 }
@@ -1227,7 +1227,7 @@ foreign_t pl_spandb_print(term_t sdb)
     return PL_warning("pl_spandb_print/1: instantiation fault");
 
   pSpan = &(iSDB->first);
-  
+
   for (n=0; n<iSDB->n; n++)
     {
       Sprintf("spandb_print2 %d %d %d\n",pSpan->start,pSpan->end,pSpan->id);
@@ -1272,7 +1272,7 @@ foreign_t pl_spandb_to_intervaldb(term_t sdb, term_t idb)
 
   pSpan = &(iSDB->first);
   pMap = iDB->im;
-  
+
   for (n=0; n<iSDB->n; n++)
     {
       //      Sprintf("spandb_to_intervaldb %d %d\n",pSpan->start,pSpan->end);
@@ -1314,11 +1314,11 @@ foreign_t pl_spandb_free(term_t sdb)
     {
       qSpan = pSpan->next;
       free(pSpan);
-      pSpan = qSpan;      
+      pSpan = qSpan;
     }
 
   free(iSDB);
-      
+
   Sprintf("spandb_free complete\n");
 
   PL_succeed;
@@ -1336,7 +1336,7 @@ foreign_t pl_spandb2_make(term_t sdb)
   spandb2 *iSDB;
   int rval;
 
-  Sprintf("spandb_make\n"); 
+  Sprintf("spandb_make\n");
 
   if (!(iSDB = malloc(sizeof(spandb2))))
     PL_fail;
@@ -1390,16 +1390,16 @@ foreign_t pl_spandb2_addone(term_t sdb, term_t s, term_t e, term_t id, term_t id
 	{
 	  qSpan = pSpan->next;
 	  free(pSpan);
-	  pSpan = qSpan;      
+	  pSpan = qSpan;
 	}
       free(iSDB);
    }
-      
+
   (iSDB->n)++;
 
   iSDB->last = iSDB->last->next;
 
-  //  Sprintf("spandb_addone: added %d %d\n", s_s,s_e); 
+  //  Sprintf("spandb_addone: added %d %d\n", s_s,s_e);
 
   PL_succeed;
 }
@@ -1415,7 +1415,7 @@ foreign_t pl_spandb2_print(term_t sdb)
     return PL_warning("pl_spandb_print/1: instantiation fault");
 
   pSpan = &(iSDB->first);
-  
+
   for (n=0; n<iSDB->n; n++)
     {
       Sprintf("spandb_print %d %d %s\n",pSpan->start,pSpan->end,pSpan->id);
@@ -1460,7 +1460,7 @@ foreign_t pl_spandb2_to_intervaldb(term_t sdb, term_t idb)
 
   pSpan = &(iSDB->first);
   pMap = iDB->im;
-  
+
   for (n=0; n<iSDB->n; n++)
     {
       //      Sprintf("spandb_to_intervaldb %d %d\n",pSpan->start,pSpan->end);
@@ -1529,10 +1529,10 @@ foreign_t pl_spandb2_to_intervaldb2(term_t sdb, term_t idb, term_t ndb)
 
   pSpan = &(iSDB->first);
   pMap = iDB->im;
-  
+
   // set cur_name as a pointer to the current name
   cur_name = names;
-  
+
   for (n=0; n<iSDB->n; n++)
     {
       //      Sprintf("spandb_to_intervaldb %d %d\n",pSpan->start,pSpan->end);
@@ -1584,11 +1584,11 @@ foreign_t pl_spandb2_free(term_t sdb)
     {
       qSpan = pSpan->next;
       free(pSpan);
-      pSpan = qSpan;      
+      pSpan = qSpan;
     }
 
   free(iSDB);
-      
+
   Sprintf("spandb_free complete\n");
 
   PL_succeed;
@@ -1596,7 +1596,7 @@ foreign_t pl_spandb2_free(term_t sdb)
 
 install_t
 install()
-{ 
+{
   PL_register_foreign("get_x", 1, (void*)pl_get_x, 0);
   PL_register_foreign("set_x", 1, (void*)pl_set_x, 0);
   PL_register_foreign("inc_x", 0, (void*)pl_inc_x, 0);

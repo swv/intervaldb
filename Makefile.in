@@ -43,7 +43,7 @@ OBJ=		intervaldb4pl.o
 all:		$(TARGETS)
 
 # requires pygr. cd pygr;make;cp libnclist.a <here>
-intervaldb4pl.@SO@: intervaldb4pl.o	
+intervaldb4pl.@SO@: intervaldb4pl.o
 		$(LD) $(LDFLAGS) -o $@ intervaldb4pl.o libnclist.a
 
 

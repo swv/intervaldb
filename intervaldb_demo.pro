@@ -82,8 +82,8 @@ t :-
         index_features,
         forall(range_query('2L',70000,80000,F),
                writeln(F)).
-        
-       
+
+
 
 
 
