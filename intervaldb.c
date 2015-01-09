@@ -122,18 +122,18 @@ SublistHeader *build_nested_list_inplace(IntervalMap im[],int n,
 /* 	     im[i-1].end, im[i].start,im[i].end,i); */
     }
   }
-  
+
 /*   printf("%d lists?!\n", nlists); */
   *p_nlists=nlists-1;
-  
+
   if(nlists==1){
     *p_n=n;
     CALLOC(subheader,1,SublistHeader); /* RETURN A DUMMY ARRAY, SINCE NULL RETURN IS ERROR CODE */
     return subheader;
   }
-  
+
   CALLOC(subheader,nlists+1,SublistHeader); /* SUBLIST HEADER INDEX */
-  
+
   im[0].sublist=0;
   subheader[0].start= -1;
   subheader[0].len=1;
@@ -160,7 +160,7 @@ SublistHeader *build_nested_list_inplace(IntervalMap im[],int n,
       i++;
     }
   }
-  
+
   while(isublist>0){ /* pop remaining stack */
     subheader[isublist].start=subheader[im[parent].sublist].len-1; /* RECORD PARENT RELATIVE POSITION */
     isublist=im[parent].sublist;
@@ -288,7 +288,7 @@ SublistHeader *build_nested_list(IntervalMap im[],int n,
 
     memcpy(im+j,imsub,nsub*sizeof(IntervalMap)); /* COPY THE SUBLISTS */
     for (i=0;i<nlists;i++) /* ADJUST start ADDRESSES FOR SHIFT*/
-      subheader[i].start += j; 
+      subheader[i].start += j;
     FREE(imsub);
     *p_n = j; /* COPY THE COMPRESSED LIST SIZES BACK TO CALLER*/
   }
@@ -330,7 +330,7 @@ int find_overlap_start(int start,int end,IntervalMap im[],int n)
   }
   if (l<n && HAS_OVERLAP_POSITIVE(im[l],start,end))
     return l; /* l IS START OF OVERLAP */
-  else 
+  else
     return -1; /* NO OVERLAP FOUND */
 }
 
@@ -421,7 +421,7 @@ int find_intervals(IntervalIterator *it0,int start,int end,
   if (!it0) { /* ALLOCATE AN ITERATOR IF NOT SUPPLIED*/
     CALLOC(it,1,IntervalIterator);
   }
-  else 
+  else
     it=it0;
 
 #if defined(ALL_POSITIVE_ORIENTATION) || defined(MERGE_INTERVAL_ORIENTATIONS)
@@ -456,7 +456,7 @@ int find_intervals(IntervalIterator *it0,int start,int end,
     free_interval_iterator(it);
   it=NULL;  /* ITERATOR IS EXHAUSTED */
 
- finally_return_result:  
+ finally_return_result:
 #if defined(ALL_POSITIVE_ORIENTATION) || defined(MERGE_INTERVAL_ORIENTATIONS)
   reorient_intervals(ibuf,buf,ori_sign); /* REORIENT INTERVALS TO MATCH QUERY ORI */
 #endif
@@ -558,7 +558,7 @@ int find_file_start(IntervalIterator *it,int start,int end,int isub,
       ntop=subheader->len;
       nii=ntop/div; /* CALCULATE SUBLIST INDEX SIZE */
       if (ntop%div) /* ONE EXTRA ENTRY FOR PARTIAL BLOCK */
-	nii++;    
+	nii++;
       i_div=find_index_start(start,end,ii+offset_div,nii);
     }
   }
@@ -599,7 +599,7 @@ int find_file_intervals(IntervalIterator *it0,int start,int end,
   if (!it0) { /* ALLOCATE AN ITERATOR IF NOT SUPPLIED*/
     CALLOC(it,1,IntervalIterator);
   }
-  else 
+  else
     it=it0;
 
 #if defined(ALL_POSITIVE_ORIENTATION) || defined(MERGE_INTERVAL_ORIENTATIONS)
@@ -615,7 +615,7 @@ int find_file_intervals(IntervalIterator *it0,int start,int end,
     if (find_file_start(it,start,end,-1,ii,nii,subheader,nlists,
 			subheader_file,ntop,div,ifile) == FIND_FILE_MALLOC_ERR)
       goto handle_malloc_failure;
-  
+
   do { /* ITERATOR STACK LOOP */
     while (it->i_div < it->nii) { /* BLOCK ITERATION LOOP */
       while (it->i>=0 && it->i<it->n /* INDIVIDUAL INTERVAL ITERATION LOOP */
@@ -630,7 +630,7 @@ int find_file_intervals(IntervalIterator *it0,int start,int end,
 	  it=it2; /* PUSH THE ITERATOR STACK */
 	if (FIND_FILE_MALLOC_ERR == ov)
 	  goto handle_malloc_failure;
-	
+
 	if (ibuf>=nbuf)  /* FILLED THE BUFFER, RETURN THE RESULTS SO FAR */
 	  goto finally_return_result;
       }
@@ -646,7 +646,7 @@ int find_file_intervals(IntervalIterator *it0,int start,int end,
     free_interval_iterator(it);
   it=NULL;  /* ITERATOR IS EXHAUSTED */
 
- finally_return_result:  
+ finally_return_result:
 #if defined(ALL_POSITIVE_ORIENTATION) || defined(MERGE_INTERVAL_ORIENTATIONS)
   reorient_intervals(ibuf,buf,ori_sign); /* REORIENT INTERVALS TO MATCH QUERY ORI */
 #endif
@@ -926,7 +926,7 @@ int save_text_file(char filestem[],char basestem[],
 
   sprintf(path,"%s.size",filestem); /* SAVE BASIC SIZE INFO*/
   ifile=fopen(path,"r");
-  if (!ifile) 
+  if (!ifile)
     goto unable_to_open_file;
   if (5!=fscanf(ifile,"%d %d %d %d %d",&n,&ntop,&div,&nlists,&nii))
     goto fread_error_occurred;
@@ -944,7 +944,7 @@ int save_text_file(char filestem[],char basestem[],
   if (nii>0) {
     sprintf(path,"%s.index",filestem); /* SAVE BASIC SIZE INFO*/
     ifile=fopen(path,"r");
-    if (!ifile) 
+    if (!ifile)
       goto unable_to_open_file;
     for (i=0;i<nii;i++) {
       if (1!=fread(&ii,sizeof(IntervalIndex),1,ifile))
@@ -958,7 +958,7 @@ int save_text_file(char filestem[],char basestem[],
   if(nlists>0){
     sprintf(path,"%s.subhead",filestem); /* SAVE THE SUBHEADER LIST */
     ifile=fopen(path,"r");
-    if (!ifile) 
+    if (!ifile)
       goto unable_to_open_file;
     for (i=0;i<nlists;i++) {
       if (1!=fread(&subheader,sizeof(SublistHeader),1,ifile))
@@ -973,7 +973,7 @@ int save_text_file(char filestem[],char basestem[],
   if (npad>0) {
     sprintf(path,"%s.idb",filestem); /* SAVE BASIC SIZE INFO*/
     ifile=fopen(path,"r");
-    if (!ifile) 
+    if (!ifile)
       goto unable_to_open_file;
     for (i=0;i<npad;i++) {
       if (1!=fread(&im,sizeof(IntervalMap),1,ifile))
@@ -1018,7 +1018,7 @@ int text_file_to_binaries(FILE *infile,char buildpath[],char err_msg[])
     goto fread_error_occurred;
   sprintf(path,"%s%s.size",buildpath,filestem); /* SAVE BASIC SIZE INFO*/
   ifile=fopen(path,"w");
-  if (!ifile) 
+  if (!ifile)
     goto unable_to_open_file;
   if (fprintf(ifile,"%d %d %d %d %d\n",n,ntop,div,nlists,nii)<0)
     goto write_error_occurred;
@@ -1032,7 +1032,7 @@ int text_file_to_binaries(FILE *infile,char buildpath[],char err_msg[])
   if (nii>0) {
     sprintf(path,"%s%s.index",buildpath,filestem); /* SAVE INDEX INFO*/
     ifile=fopen(path,"w");
-    if (!ifile) 
+    if (!ifile)
       goto unable_to_open_file;
     for (i=0;i<nii;i++) {
       if (NULL==fgets(line,32767,infile))
@@ -1048,7 +1048,7 @@ int text_file_to_binaries(FILE *infile,char buildpath[],char err_msg[])
   if(nlists>0){
     sprintf(path,"%s%s.subhead",buildpath,filestem); /* SAVE THE SUBHEADER LIST */
     ifile=fopen(path,"w");
-    if (!ifile) 
+    if (!ifile)
       goto unable_to_open_file;
     for (i=0;i<nlists;i++) {
       if (NULL==fgets(line,32767,infile))
@@ -1064,7 +1064,7 @@ int text_file_to_binaries(FILE *infile,char buildpath[],char err_msg[])
 
   sprintf(path,"%s%s.idb",buildpath,filestem); /* SAVE THE ACTUAL INTERVAL DB*/
   ifile=fopen(path,"w");
-  if (!ifile) 
+  if (!ifile)
     goto unable_to_open_file;
   for (i=0;i<npad;i++) {
     if (NULL==fgets(line,32767,infile))

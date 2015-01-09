@@ -93,7 +93,7 @@
 % X and Y are the intersections matched and an ID
 
 %% intervaldb_match(+IDB,+SDB,?X:int,?Y:int,?ID:char*,?S:int,?E:int) is nondet.
-% X and Y are the intersections matched, ID is name of span with 
+% X and Y are the intersections matched, ID is name of span with
 % S and E being target intervals for the ID
 
 %% intervaldb_addall(+IDB,+LSPAN) is det
@@ -265,10 +265,10 @@ make_span_list([span(Z,S,E)|T1],[_|T2],X,L3):-
 ==
 :- use_module(bio(intervaldb)).
 
-% 
+%
 demo:-
   nl.
-  
+
 
 ==
 
@@ -317,7 +317,7 @@ TODO
 * docs
 * tests
 * integration with range.pro and seqfeature_db.pro -- e.g. feature_intersects/2
- 
+
 
 ---+ Additional Information
 

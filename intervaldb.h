@@ -133,7 +133,7 @@ extern void reorient_intervals(int n,IntervalMap im[],int ori_sign);
     it->down= it2; \
   }
 
-/* IF it->up NON-NULL, MOVE UP, EVAL FALSE. 
+/* IF it->up NON-NULL, MOVE UP, EVAL FALSE.
    IF NULL, DON'T ASSIGN it, BUT EVAL TRUE */
 #define POP_ITERATOR_STACK_DONE(it) (it->up==NULL || (it=it->up)==NULL)
 
